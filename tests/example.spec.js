@@ -1,15 +1,25 @@
 // @ts-check
 const { test, expect } = require('@playwright/test');
+import { Homepage } from '../pages/home_page';
+import { ProductDetailPage } from '../pages/product_detail_page';
 
-test('has title', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
+test.only('has title', async ({ page }) => {
+  // await page.goto('https://playwright.dev/');
+  // // Expect a title "to contain" a substring.
+  // await expect(page).toHaveTitle(/Playwright/);
+  const homePage = new Homepage(page);
+  const productDetailsPage = new ProductDetailPage(page);
 
-  // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle(/Playwright/);
+  await homePage.open();
+  await homePage.searchForKeyword('iPhone');
+
+
+  await expect(productDetailsPage.title).toHaveText('')
+  await expect(productDetailsPage.price).toHaveText('')
 });
 
-test('get started link', async ({ page }) => {
-  await page.goto('https://playwrggight.dev/');
+test.skip('get started link', async ({ page }) => {
+  await page.goto('https://playwright.dev/');
 
   // Click the get started link.
   await page.getByRole('link', { name: 'Get started' }).click();
