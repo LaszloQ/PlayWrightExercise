@@ -1,29 +1,33 @@
 // @ts-check
-const { test, expect } = require('@playwright/test');
+import { test, expect } from '@playwright/test';
 import { Homepage } from '../pages/home_page';
 import { ProductDetailPage } from '../pages/product_detail_page';
+import { Product } from '../pages/products_list_page';
+import { ProductsListPage } from '../pages/products_list_page';
 
-test.only('has title', async ({ page }) => {
-  // await page.goto('https://playwright.dev/');
-  // // Expect a title "to contain" a substring.
-  // await expect(page).toHaveTitle(/Playwright/);
-  const homePage = new Homepage(page);
-  const productDetailsPage = new ProductDetailPage(page);
-
-  await homePage.open();
-  await homePage.searchForKeyword('iPhone');
+const queries = ['iPhone', 'Laptop'];
 
 
-  await expect(productDetailsPage.title).toHaveText('')
-  await expect(productDetailsPage.price).toHaveText('')
-});
+for (const query of queries) {
+  test.only(`Search for ${query} and expect product title and price to match`, async ({ page }) => {
+    const homePage = new Homepage(page);
+    const productDetailsPage = new ProductDetailPage(page);
+    const productsListPage = new ProductsListPage(page);
 
-test.skip('get started link', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
+    await homePage.open();
+    await homePage.searchForKeyword(query);
 
-  // Click the get started link.
-  await page.getByRole('link', { name: 'Get started' }).click();
+    const desiredIndex = 3;
+    const desiredProduct = new Product(page, productsListPage, desiredIndex);
+    const productTitleOnListPage = await desiredProduct.getName();
+    const productPriceOnListPage = await desiredProduct.getPrice();
 
-  // Expects page to have a heading with the name of Installation.
-  await expect(page.getByRole('heading', { name: 'Installation' })).toBeVisible();
-});
+    await desiredProduct.open();
+
+    const productTitleOnProductPage = await productDetailsPage.getName();
+    const productPriceOnProductPage = await productDetailsPage.getPriceOnCenter();
+
+    expect(productTitleOnListPage).toBe(productTitleOnProductPage)
+    expect(productPriceOnListPage).toBe(productPriceOnProductPage)
+  });
+};
