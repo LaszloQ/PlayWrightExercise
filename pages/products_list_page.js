@@ -2,7 +2,6 @@ export class ProductsListPage {
     constructor(page) {
         this.page = page;
         this.products = page.locator("css=[data-component-type='s-search-result']");
-
     }
 };
 
@@ -11,9 +10,10 @@ export class Product {
     constructor(page, parentPage, index) {
         this.page = page;
         this.container = parentPage.products.nth(index);
-        this.title = this.container.locator('h2');
+        this.title = this.container.locator('h2:visible');
         this.priceWhole = this.container.locator('css=.a-price-whole');
         this.priceDecimal = this.container.locator('css=.a-price-fraction');
+        this.photo = this.container.locator('css=img');
     }
 
 
@@ -25,6 +25,10 @@ export class Product {
 
 
     async getPrice() {
+        if (!await this.priceWhole.isVisible()) {
+            throw new Error(`Product is unavailable or out of stock. Name is:${await this.getName()}`)
+        }
+
         const wholePrice = await this.priceWhole.textContent();
         const decimalPrice = await this.priceDecimal.textContent();
 
@@ -33,6 +37,6 @@ export class Product {
 
 
     async open() {
-        await this.title.click();
+        await this.title.click({ force: true });
     }
 };

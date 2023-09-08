@@ -2,7 +2,7 @@ export class ProductDetailPage {
     constructor(page) {
         this.page = page;
         this.title = page.locator('css=#title');
-        this.price = page.locator('css=.apexPriceToPay>span:first-child');
+        this.price = page.locator("css=[class*='ToPay'] >span:first-of-type");
         this.priceOnShippingSide = page.locator('css=#corePrice_feature_div');
     }
 
@@ -20,5 +20,5 @@ export class ProductDetailPage {
         //split $699.99 to [ '$', '699.99' ], and xoncert '699.99' to number
         return Number(textContent.split(currency)[1]);
     }
-}
+};
 
